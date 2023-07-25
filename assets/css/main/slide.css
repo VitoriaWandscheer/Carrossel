@@ -14,6 +14,32 @@
     width: 65vw;
 }
 
+.slide-content {
+    border: 1px solid #F1EBEA;
+    border-radius: 10px;
+    position: relative;
+}
+
 .slide-image {
+    border-radius: 9px;
     width: 100%;
+}
+
+.slide-description {
+    background: linear-gradient(to top, #000, transparent);
+    border-radius: 10px;
+    color: #F1EBEA;
+    position: absolute;
+    padding: 15px;
+    bottom: 0;
+    width: 100%;
+}
+
+.slide-description h3 {
+    font-size: 2rem;
+    margin-bottom: 0.4rem;
+}
+
+.slide-description p {
+    font-size: 15px;
 }
