@@ -1,0 +1,31 @@
+/* .slide-list {
+    display: flex;
+}
+
+.slide-item {
+    width: 70vw;
+}
+
+.slide-image {
+    width: 100%;
+} */
+
+.wrapper {
+    display: flex;
+    height: 100%;
+    align-items: center;
+}
+
+.slide-item {
+    display: flex;
+}
+
+.slide-content {
+    flex-shrink: 0;
+    padding: 0 20px;
+    width: 65vw;
+}
+
+.slide-image {
+    width: 100%;
+}
