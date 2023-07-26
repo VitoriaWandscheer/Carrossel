@@ -8,6 +8,7 @@
     display: flex;
     justify-content: center;
     flex-direction: column;
+    overflow: hidden;
     width: 100%;
 }
 
@@ -22,13 +23,14 @@
 }
 
 .slide-content {
-    border: 1px solid #F1EBEA;
+    border: 2px solid #F1EBEA;
     border-radius: 10px;
+    box-shadow: #494031 0px 13px 13px;
     position: relative;
 }
 
 .slide-image {
-    border-radius: 9px;
+    border-radius: 8px;
     width: 100%;
 }
 
@@ -48,19 +50,11 @@
 }
 
 .slide-description p {
-    font-size: 15px;
-}
-
-.slide-control-button {
-    background-image: url(../../img/circle.svg);
-    background-color: transparent;
-    background-repeat: no-repeat;
-    background-position: center;
-    width: 15px;
-    height: 15px;
+    font-size: 1.3rem;
 }
 
 .slide-nav-button {
+    cursor: pointer;
     position: absolute;
     z-index: 1;
     background-color: transparent;
@@ -82,4 +76,39 @@
 
 .slide-controls {
     margin: 2rem auto;
+}
+
+.slide-control-button {
+    cursor: pointer;
+    background-image: url(../../img/circle.svg);
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 15px;
+    height: 15px;
+}
+
+.slide-control-button.active {
+    background-image: url(../../img/circle-active.svg);
+}
+
+@media screen and (max-width: 768px) {
+    .slide-description {
+        padding: 1rem;
+    }
+    .slide-description h3 {
+        font-size: 1rem;
+    }
+    .slide-description p {
+        font-size: 0.7rem;
+    }
+    .slide-controls {
+        margin: 3rem auto;
+    }
+    .slide-control-button {
+        margin: 0 0.4rem;
+    }
+    .slide-nav-button {
+        display: none;
+    }
 }
