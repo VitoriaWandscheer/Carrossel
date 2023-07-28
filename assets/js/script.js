@@ -10,11 +10,14 @@ const slideItems = document.querySelectorAll('[data-slide="item"]')
 let startPoint = 0
 let savedPosition = 0
 let currentPoint = 0
+let movement = 0
+let currentSlideIndex = 0
 
-function onMouseDown(event) {
+function onMouseDown(event, index) {
     const slideItem = event.currentTarget
     startPoint = event.clientX
     currentPoint = event.clientX - savedPosition
+    currentSlideIndex = index
     slideItem.addEventListener('mousemove', onMouseMove)
 }
 
@@ -34,6 +37,8 @@ slideItems.forEach(function(slideItem, index) {
     slideItem.addEventListener('dragstart', function(event) {
         event.preventDefault()
     })
-    slideItem.addEventListener('mousedown', onMouseDown)
+    slideItem.addEventListener('mousedown', function(event){
+        onMouseDown(event, index)
+    })
     slideItem.addEventListener('mouseup', onMouseUp)
 })
