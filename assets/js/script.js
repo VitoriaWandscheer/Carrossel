@@ -5,7 +5,6 @@ const slideList = document.querySelector('[data-slide="list"]')
 const navPreviousButton = document.querySelector('[data-slide="nav-previous-button"]')
 const navNextButton = document.querySelector('[data-slide="nav-next-button"]')
 const slideControlsWrapper = document.querySelector('[data-slide="controls-wrapper"]')
-const slideControlButtons = document.querySelectorAll('[data-slide="control-button"]')
 const slideItems = document.querySelectorAll('[data-slide="item"]')
 
 const state = {
@@ -17,7 +16,7 @@ const state = {
 }
 
 /** MOVIMENTOS **/
-function translateSlide({ position }) {
+function translateSlide({ position }){
     state.savedPosition = position
     slideList.style.transform = `translateX(${position}px)`
 }
@@ -29,8 +28,7 @@ function getCenterPosition({ index: index }){
     const position = margin - (index * slideWidth)
     return position
 }
-
-function setVisibleSlide({ index: index }) {
+function setVisibleSlide({ index: index }){
     const position = getCenterPosition({index: index})
     state.currentSlideIndex = index
     translateSlide({position: position})
@@ -40,6 +38,16 @@ function nextSlide(){
 }
 function previousSlide(){
     setVisibleSlide({index: state.currentSlideIndex - 1})
+}
+
+/** Control Buttons **/
+function createControlButtons(){
+    slideItems.forEach(function(){
+        const controlButton = document.createElement('button')
+        controlButton.classList.add('slide-control-button')
+        controlButton.setAttribute('data-slide', 'control-button')
+        slideControlsWrapper.append(controlButton)
+    })
 }
 
 /** EVENT LISTENER: Mouse **/
@@ -69,18 +77,31 @@ function onMouseUp(event) {
     }
     slideItem.removeEventListener('mousemove', onMouseMove)
 }
-slideItems.forEach(function(slideItem, index) {
-    slideItem.addEventListener('dragstart', function(event) {
-        event.preventDefault()
-    })
-    slideItem.addEventListener('mousedown', function(event){
-        onMouseDown(event, index)
-    })
-    slideItem.addEventListener('mouseup', onMouseUp)
-})
+
+
 
 /** EVENT LISTENER: Setas **/
-navNextButton.addEventListener('click', nextSlide)
-navPreviousButton.addEventListener('click', previousSlide)
+function setListeners(){
+    const slideControlButtons = document.querySelectorAll('[data-slide="control-button"]')
 
-setVisibleSlide(0)
+    slideItems.forEach(function(slideItem, index) {
+        slideItem.addEventListener('dragstart', function(event) {
+            event.preventDefault()
+        })
+        slideItem.addEventListener('mousedown', function(event){
+            onMouseDown(event, index)
+        })
+        slideItem.addEventListener('mouseup', onMouseUp)
+    })
+}
+
+function initSlider(){
+    createControlButtons()
+    setListeners()
+    setVisibleSlide(0)
+}
+
+
+
+/** Inicia o script **/
+initSlider()

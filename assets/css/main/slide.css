@@ -79,6 +79,7 @@
     background-position: center;
     width: 15px;
     height: 15px;
+    margin: 0px 0.3rem;
 }
 .slide-control-button.active {
     background-image: url(../../img/active-circle.svg);
