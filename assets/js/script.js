@@ -16,6 +16,33 @@ const state = {
     currentSlideIndex: 0
 }
 
+/** MOVIMENTOS **/
+function translateSlide({ position }) {
+    state.savedPosition = position
+    slideList.style.transform = `translateX(${position}px)`
+}
+function getCenterPosition({ index: index }){
+    const slideItem = slideItems[index]
+    const slideWidth = slideItem.clientWidth
+    const windowWidth = document.body.clientWidth
+    const margin = (windowWidth - slideWidth) / 2
+    const position = margin - (index * slideWidth)
+    return position
+}
+
+function setVisibleSlide({ index: index }) {
+    const position = getCenterPosition({index: index})
+    state.currentSlideIndex = index
+    translateSlide({position: position})
+}
+function nextSlide(){
+    setVisibleSlide({index: state.currentSlideIndex + 1})
+}
+function previousSlide(){
+    setVisibleSlide({index: state.currentSlideIndex - 1})
+}
+
+/** EVENT LISTENER: Mouse **/
 function onMouseDown(event, index) {
     const slideItem = event.currentTarget
     state.startPoint = event.clientX
@@ -27,24 +54,18 @@ function onMouseDown(event, index) {
 function onMouseMove(event) {
     state.movement = event.clientX - state.startPoint
     const position = event.clientX - state.currentPoint
-    slideList.style.transform = 'translateX('+position+'px)'
+    translateSlide({ position: position })
     state.savedPosition = position
 }
 function onMouseUp(event) {
     const slideItem = event.currentTarget
     const slideWidht = slideItem.clientWidth
     if (state.movement < -150) {
-        const position = (state.currentSlideIndex + 1) * slideWidht
-        slideList.style.transform = 'translateX('+(-position)+'px)'
-        state.savedPosition = -position
+        nextSlide()
     } else if (state.movement > 150) {
-        const position = (state.currentSlideIndex - 1) * slideWidht
-        slideList.style.transform = 'translateX('+(-position)+'px)'
-        state.savedPosition = -position
+        previousSlide()
     } else {
-        const position = (state.currentSlideIndex) * slideWidht
-        slideList.style.transform = 'translateX('+(-position)+'px)'
-        state.savedPosition = -position
+        setVisibleSlide({index: state.currentSlideIndex})
     }
     slideItem.removeEventListener('mousemove', onMouseMove)
 }
@@ -57,3 +78,9 @@ slideItems.forEach(function(slideItem, index) {
     })
     slideItem.addEventListener('mouseup', onMouseUp)
 })
+
+/** EVENT LISTENER: Setas **/
+navNextButton.addEventListener('click', nextSlide)
+navPreviousButton.addEventListener('click', previousSlide)
+
+setVisibleSlide(0)
