@@ -77,12 +77,22 @@ function onMouseUp(event) {
     }
     slideItem.removeEventListener('mousemove', onMouseMove)
 }
-
+function onControlButtonClick(event, index){
+    const controlButton = document.querySelectorAll('[data-slide="control-button"]')
+    controlButton.classList.add('active')
+    setVisibleSlide(index)
+}
 
 
 /** EVENT LISTENER: Setas **/
 function setListeners(){
     const controlButtons = document.querySelectorAll('[data-slide="control-button"]')
+
+    controlButtons.forEach(function(controlButton, index){
+        controlButton.addEventListener('click', function(event){
+            onControlButtonClick(event, index)
+        })
+    })
 
     slideItems.forEach(function(slideItem, index) {
         slideItem.addEventListener('dragstart', function(event) {
@@ -93,12 +103,15 @@ function setListeners(){
         })
         slideItem.addEventListener('mouseup', onMouseUp)
     })
+    
+    navNextButton.addEventListener('click', nextSlide)
+    navPreviousButton.addEventListener('click', previousSlide)
 }
 
 function initSlider(){
     createControlButtons()
     setListeners()
-    setVisibleSlide(0)
+    setVisibleSlide({index: 0})
 }
 
 /** Inicia o script **/
