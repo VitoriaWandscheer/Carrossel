@@ -82,7 +82,7 @@ function onMouseUp(event) {
 
 /** EVENT LISTENER: Setas **/
 function setListeners(){
-    const slideControlButtons = document.querySelectorAll('[data-slide="control-button"]')
+    const controlButtons = document.querySelectorAll('[data-slide="control-button"]')
 
     slideItems.forEach(function(slideItem, index) {
         slideItem.addEventListener('dragstart', function(event) {
@@ -100,8 +100,6 @@ function initSlider(){
     setListeners()
     setVisibleSlide(0)
 }
-
-
 
 /** Inicia o script **/
 initSlider()
