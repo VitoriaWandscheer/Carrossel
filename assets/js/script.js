@@ -6,6 +6,7 @@ const navPreviousButton = document.querySelector('[data-slide="nav-previous-butt
 const navNextButton = document.querySelector('[data-slide="nav-next-button"]')
 const slideControlsWrapper = document.querySelector('[data-slide="controls-wrapper"]')
 const slideItems = document.querySelectorAll('[data-slide="item"]')
+let controlButtons
 
 const state = {
     startPoint: 0,
@@ -31,6 +32,8 @@ function getCenterPosition({ index: index }){
 function setVisibleSlide({ index: index }){
     const position = getCenterPosition({index: index})
     state.currentSlideIndex = index
+    slideList.style.transition = 'transform .5s'
+    activeControlButton({index: index})
     translateSlide({position: position})
 }
 function nextSlide(){
@@ -49,14 +52,21 @@ function createControlButtons(){
         slideControlsWrapper.append(controlButton)
     })
 }
+function activeControlButton({index}) {
+    const controlButton = controlButtons[index]
+    controlButtons.forEach(function(controlButtonItem){
+        controlButtonItem.classList.remove('active')
+    })
+    controlButton.classList.add('active')
+}
 
-/** EVENT LISTENER: Mouse **/
+/** EVENT LISTENER **/
 function onMouseDown(event, index) {
     const slideItem = event.currentTarget
     state.startPoint = event.clientX
     state.currentPoint = event.clientX - state.savedPosition
     state.currentSlideIndex = index
-    console.log(state.currentSlideIndex)
+    slideList.style.transition = 'none'
     slideItem.addEventListener('mousemove', onMouseMove)
 }
 function onMouseMove(event) {
@@ -77,23 +87,19 @@ function onMouseUp(event) {
     }
     slideItem.removeEventListener('mousemove', onMouseMove)
 }
-function onControlButtonClick(event, index){
-    const controlButton = document.querySelectorAll('[data-slide="control-button"]')
-    controlButton.classList.add('active')
-    setVisibleSlide(index)
+function onControlButtonClick(index) {
+    setVisibleSlide({index})
 }
 
-
-/** EVENT LISTENER: Setas **/
+/** EVENT LISTENER **/
 function setListeners(){
-    const controlButtons = document.querySelectorAll('[data-slide="control-button"]')
+    controlButtons = document.querySelectorAll('[data-slide="control-button"]')
 
-    controlButtons.forEach(function(controlButton, index){
-        controlButton.addEventListener('click', function(event){
-            onControlButtonClick(event, index)
+    controlButtons.forEach(function(controlButton, index) {
+        controlButton.addEventListener('click', function(event) {
+            onControlButtonClick(index)
         })
     })
-
     slideItems.forEach(function(slideItem, index) {
         slideItem.addEventListener('dragstart', function(event) {
             event.preventDefault()
@@ -103,7 +109,6 @@ function setListeners(){
         })
         slideItem.addEventListener('mouseup', onMouseUp)
     })
-    
     navNextButton.addEventListener('click', nextSlide)
     navPreviousButton.addEventListener('click', previousSlide)
 }
