@@ -94,6 +94,9 @@ function onSlideListTransitionEnd() {
     if(state.currentSlideIndex === slideItems.length - 2){
         setVisibleSlide({index: 2, animate: 'none'})
     }
+    if(state.currentSlideIndex === 1){
+        setVisibleSlide({index: -3, animate: 'none'})
+    }
 }
 
 /** EVENT LISTENER **/
@@ -122,7 +125,7 @@ function setListeners(){
 function initSlider(){
     createControlButtons()
     setListeners()
-    setVisibleSlide({index: 0, animate: true})
+    setVisibleSlide({index: 2, animate: true})
 }
 
 /** Inicia o script **/
