@@ -17,11 +17,11 @@ const state = {
 }
 
 /** MOVIMENTOS **/
-function translateSlide({ position }){
+function translateSlide({position}){
     state.savedPosition = position
     slideList.style.transform = `translateX(${position}px)`
 }
-function getCenterPosition({ index: index }){
+function getCenterPosition({index}){
     const slideItem = slideItems[index]
     const slideWidth = slideItem.clientWidth
     const windowWidth = document.body.clientWidth
@@ -29,18 +29,18 @@ function getCenterPosition({ index: index }){
     const position = margin - (index * slideWidth)
     return position
 }
-function setVisibleSlide({ index: index }){
+function setVisibleSlide({index, animate}){
     const position = getCenterPosition({index: index})
     state.currentSlideIndex = index
-    slideList.style.transition = 'transform .5s'
+    slideList.style.transition = animate === true ? 'transform .5s' : 'none'
     activeControlButton({index: index})
     translateSlide({position: position})
 }
 function nextSlide(){
-    setVisibleSlide({index: state.currentSlideIndex + 1})
+    setVisibleSlide({index: state.currentSlideIndex + 1, animate: true})
 }
 function previousSlide(){
-    setVisibleSlide({index: state.currentSlideIndex - 1})
+    setVisibleSlide({index: state.currentSlideIndex - 1, animate: true})
 }
 
 /** Control Buttons **/
@@ -83,12 +83,17 @@ function onMouseUp(event) {
     } else if (state.movement > 150) {
         previousSlide()
     } else {
-        setVisibleSlide({index: state.currentSlideIndex})
+        setVisibleSlide({index: state.currentSlideIndex, animate: true})
     }
     slideItem.removeEventListener('mousemove', onMouseMove)
 }
 function onControlButtonClick(index) {
-    setVisibleSlide({index})
+    setVisibleSlide({index: index, animate: true})
+}
+function onSlideListTransitionEnd() {
+    if(state.currentSlideIndex === slideItems.length - 2){
+        setVisibleSlide({index: 2, animate: 'none'})
+    }
 }
 
 /** EVENT LISTENER **/
@@ -111,12 +116,13 @@ function setListeners(){
     })
     navNextButton.addEventListener('click', nextSlide)
     navPreviousButton.addEventListener('click', previousSlide)
+    slideList.addEventListener('transitionend', onSlideListTransitionEnd)
 }
 
 function initSlider(){
     createControlButtons()
     setListeners()
-    setVisibleSlide({index: 0})
+    setVisibleSlide({index: 0, animate: true})
 }
 
 /** Inicia o script **/
