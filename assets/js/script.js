@@ -16,7 +16,9 @@ const state = {
     currentSlideIndex: 0
 }
 
-/** MOVIMENTOS **/
+/** MOVIMENTOS
+ * 
+*/
 function translateSlide({position}){
     state.savedPosition = position
     slideList.style.transform = `translateX(${position}px)`
@@ -30,6 +32,9 @@ function getCenterPosition({index}){
     return position
 }
 function setVisibleSlide({index, animate}){
+    if(index === 0 || index === slideItems.length - 1){
+        index = state.currentSlideIndex
+    }
     const position = getCenterPosition({index: index})
     state.currentSlideIndex = index
     slideList.style.transition = animate === true ? 'transform .5s' : 'none'
@@ -43,7 +48,9 @@ function previousSlide(){
     setVisibleSlide({index: state.currentSlideIndex - 1, animate: true})
 }
 
-/** Control Buttons **/
+/** Control Buttons
+ * 
+*/
 function createControlButtons(){
     slideItems.forEach(function(){
         const controlButton = document.createElement('button')
@@ -60,7 +67,23 @@ function activeControlButton({index}) {
     controlButton.classList.add('active')
 }
 
-/** EVENT LISTENER **/
+/** Slide Clones
+ * 
+*/
+function createSlideClones() {
+    const firstSlide = slideItems[0].cloneNode(true)
+    const secondSlide = slideItems[1].cloneNode(true)
+    const lastSlide = slideItems[slideItems - 1].cloneNode(true)
+    const penultimateSlide = slideItems[slideItems -2 ].cloneNode(true)
+
+    slideList.append(firstSlide)
+    slideList.append(secondSlide)
+
+}
+
+/** EVENT LISTENER
+ * 
+*/
 function onMouseDown(event, index) {
     const slideItem = event.currentTarget
     state.startPoint = event.clientX
@@ -99,7 +122,9 @@ function onSlideListTransitionEnd() {
     }
 }
 
-/** EVENT LISTENER **/
+/** EVENT LISTENER 
+ * 
+*/
 function setListeners(){
     controlButtons = document.querySelectorAll('[data-slide="control-button"]')
 
@@ -124,6 +149,7 @@ function setListeners(){
 
 function initSlider(){
     createControlButtons()
+    createSlideClones
     setListeners()
     setVisibleSlide({index: 2, animate: true})
 }
