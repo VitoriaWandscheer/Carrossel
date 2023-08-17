@@ -5,8 +5,9 @@ const slideList = document.querySelector('[data-slide="list"]')
 const navPreviousButton = document.querySelector('[data-slide="nav-previous-button"]')
 const navNextButton = document.querySelector('[data-slide="nav-next-button"]')
 const slideControlsWrapper = document.querySelector('[data-slide="controls-wrapper"]')
-const slideItems = document.querySelectorAll('[data-slide="item"]')
+let slideItems = document.querySelectorAll('[data-slide="item"]')
 let controlButtons
+let slideInterval
 
 const state = {
     startPoint: 0,
@@ -60,11 +61,15 @@ function createControlButtons(){
     })
 }
 function activeControlButton({index}) {
-    const controlButton = controlButtons[index]
+    const slideItem = slideItems[index]
+    const dataIndex = Number(slideItem.dataset.index)
+    const controlButton = controlButtons[dataIndex]
     controlButtons.forEach(function(controlButtonItem){
         controlButtonItem.classList.remove('active')
     })
-    controlButton.classList.add('active')
+    if(controlButton) {
+        controlButton.classList.add('active')
+    }
 }
 
 /** Slide Clones
@@ -72,13 +77,27 @@ function activeControlButton({index}) {
 */
 function createSlideClones() {
     const firstSlide = slideItems[0].cloneNode(true)
+    firstSlide.classList.add('slide-cloned')
+    firstSlide.dataset.index = slideItems.length
+
     const secondSlide = slideItems[1].cloneNode(true)
-    const lastSlide = slideItems[slideItems - 1].cloneNode(true)
-    const penultimateSlide = slideItems[slideItems -2 ].cloneNode(true)
+    secondSlide.classList.add('slide-cloned')
+    secondSlide.dataset.index = slideItems.length + 1
+
+    const lastSlide = slideItems[slideItems.length - 1].cloneNode(true)
+    lastSlide.classList.add('slide-cloned')
+    lastSlide.dataset.index = -1
+
+    const penultimateSlide = slideItems[slideItems.length - 2 ].cloneNode(true)
+    penultimateSlide.classList.add('slide-cloned')
+    penultimateSlide.dataset.index = -2
 
     slideList.append(firstSlide)
     slideList.append(secondSlide)
+    slideList.prepend(lastSlide)
+    slideList.prepend(penultimateSlide)
 
+    slideItems = document.querySelectorAll('[data-slide="item"]')
 }
 
 /** EVENT LISTENER
@@ -100,7 +119,6 @@ function onMouseMove(event) {
 }
 function onMouseUp(event) {
     const slideItem = event.currentTarget
-    const slideWidht = slideItem.clientWidth
     if (state.movement < -150) {
         nextSlide()
     } else if (state.movement > 150) {
@@ -121,18 +139,25 @@ function onSlideListTransitionEnd() {
         setVisibleSlide({index: slideItems.length - 3, animate: 'none'})
     }
 }
+function setAutoPlay() {
+    slideInterval = setInterval(function() {
+        setVisibleSlide({index: state.currentSlideIndex + 1, animate: true})
+    }, 1000)
+}
+
 
 /** EVENT LISTENER 
  * 
 */
 function setListeners(){
     controlButtons = document.querySelectorAll('[data-slide="control-button"]')
-
+    
     controlButtons.forEach(function(controlButton, index) {
         controlButton.addEventListener('click', function(event) {
             onControlButtonClick(index)
         })
     })
+    
     slideItems.forEach(function(slideItem, index) {
         slideItem.addEventListener('dragstart', function(event) {
             event.preventDefault()
@@ -142,16 +167,24 @@ function setListeners(){
         })
         slideItem.addEventListener('mouseup', onMouseUp)
     })
+
     navNextButton.addEventListener('click', nextSlide)
     navPreviousButton.addEventListener('click', previousSlide)
     slideList.addEventListener('transitionend', onSlideListTransitionEnd)
+    slideWrapper.addEventListener('mouseenter', function() {
+        clearInterval(slideInterval)
+    })
+    slideWrapper.addEventListener('mouseleave', function(){ 
+        setAutoPlay()
+    })
 }
 
 function initSlider(){
     createControlButtons()
-    createSlideClones
+    createSlideClones()
     setListeners()
     setVisibleSlide({index: 2, animate: true})
+    setAutoPlay()
 }
 
 /** Inicia o script **/
