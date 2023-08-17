@@ -14,7 +14,9 @@ const state = {
     savedPosition: 0,
     currentPoint: 0,
     movement: 0,
-    currentSlideIndex: 0
+    currentSlideIndex: 0,
+    autoPlay: true,
+    timeInterval: 0
 }
 
 /** MOVIMENTOS
@@ -100,8 +102,8 @@ function createSlideClones() {
     slideItems = document.querySelectorAll('[data-slide="item"]')
 }
 
-/** EVENT LISTENER
- * 
+/** EVENT LISTENER MOUSE
+ * Realiza os comandos do Mouse.
 */
 function onMouseDown(event, index) {
     const slideItem = event.currentTarget
@@ -118,19 +120,43 @@ function onMouseMove(event) {
     state.savedPosition = position
 }
 function onMouseUp(event) {
+    const pointToMove = event.type.includes('touch') ? 50 : 150
     const slideItem = event.currentTarget
-    if (state.movement < -150) {
+    if (state.movement < -pointToMove) {
         nextSlide()
-    } else if (state.movement > 150) {
+    } else if (state.movement > pointToMove) {
         previousSlide()
     } else {
         setVisibleSlide({index: state.currentSlideIndex, animate: true})
     }
     slideItem.removeEventListener('mousemove', onMouseMove)
 }
-function onControlButtonClick(index) {
-    setVisibleSlide({index: index, animate: true})
+
+/** EVENT LISTENER TOUCH
+ * Realiza os comandos Touch.
+*/
+function onTouchStart(event, index){
+    event.clientX = event.touches[0].clientX
+    onMouseDown(event, index)
+    const slideItem = event.currentTarget
+    slideItem.addEventListener('touchmove', onTouchMove)
 }
+function onTouchMove(event){
+    event.clientX = event.touches[0].clientX
+    onMouseMove(event)
+}
+function onTouchEnd(event){
+    onMouseUp(event)
+    const slideItem = event.currentTarget
+    slideItem.removeEventListener('touchmove', onTouchMove)
+}
+/** EVENT LISTENER ControlButton
+ * Realiza os comando ao clicar no botão de controle.
+*/
+function onControlButtonClick(index) {
+    setVisibleSlide({index: index + 2, animate: true})
+}
+
 function onSlideListTransitionEnd() {
     if(state.currentSlideIndex === slideItems.length - 2){
         setVisibleSlide({index: 2, animate: 'none'})
@@ -140,36 +166,55 @@ function onSlideListTransitionEnd() {
     }
 }
 function setAutoPlay() {
-    slideInterval = setInterval(function() {
-        setVisibleSlide({index: state.currentSlideIndex + 1, animate: true})
-    }, 1000)
+    if (state.autoPlay) {
+        slideInterval = setInterval(function() {
+            setVisibleSlide({index: state.currentSlideIndex + 1, animate: true})
+        }, state.timeInterval)
+    }
 }
 
-
-/** EVENT LISTENER 
- * 
+/** EVENT LISTENER Inicial.
+ * Escuta os comandos do Mouse e do Touch.
 */
 function setListeners(){
     controlButtons = document.querySelectorAll('[data-slide="control-button"]')
     
+    /**
+     * Ao clicar em um ControlButton chama a função onControlButtonClick.
+     */
     controlButtons.forEach(function(controlButton, index) {
         controlButton.addEventListener('click', function(event) {
             onControlButtonClick(index)
         })
     })
-    
+
+    /**
+     * Ao arrastar um slide, tanto com o Mouse quanto com o Touch, chama a função correspondente ao comando.
+     */
     slideItems.forEach(function(slideItem, index) {
         slideItem.addEventListener('dragstart', function(event) {
             event.preventDefault()
         })
         slideItem.addEventListener('mousedown', function(event){
-            onMouseDown(event, index)
+            onTouchStart(event, index)
         })
         slideItem.addEventListener('mouseup', onMouseUp)
+
+        slideItem.addEventListener('touchstart', function(event){
+            onTouchStart(event, index)
+        })
+        slideItem.addEventListener('touchend', onTouchEnd)
     })
 
+    /**
+     * Ao clicar em um navButton chama a função correspondente ao botão (navNextButton/navPreviousButton).
+     */
     navNextButton.addEventListener('click', nextSlide)
     navPreviousButton.addEventListener('click', previousSlide)
+
+    /**
+     * Responsável pelas transições.
+     */
     slideList.addEventListener('transitionend', onSlideListTransitionEnd)
     slideWrapper.addEventListener('mouseenter', function() {
         clearInterval(slideInterval)
@@ -179,13 +224,22 @@ function setListeners(){
     })
 }
 
-function initSlider(){
+/** Inicia o Slider.
+ * Chama todas as funções iniciais.
+*/
+function initSlider({startAtIndex = 0, autoPlay = true, timeInterval = 3000}){
+    state.autoPlay = autoPlay
+    state.timeInterval = timeInterval
     createControlButtons()
     createSlideClones()
     setListeners()
-    setVisibleSlide({index: 2, animate: true})
+    setVisibleSlide({index: startAtIndex + 2, animate: true})
     setAutoPlay()
 }
 
-/** Inicia o script **/
-initSlider()
+// Chama a função initSlider e atribui os valores necessários.  
+initSlider({
+    autoPlay: false,
+    startAtIndex: 0,
+    timeInterval: 3000
+})
